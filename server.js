@@ -1,58 +1,23 @@
-/* ******************************************
- * This server.js file is the primary file of the 
- * application. It is used to control the project.
- *******************************************/
-
-/* ***********************
- * Require Statements
- *************************/
-const express = require("express");
-const expressLayouts = require("express-ejs-layouts");
-const env = require("dotenv").config();
+const express = require('express');
 const app = express();
-const staticRoutes = require("./routes/static");
+const path = require('path');
 
-/* ***********************
- * View Engine and Templates
- *************************/
-app.set("view engine", "ejs");
-app.set("views", __dirname + "/views"); // Asegúrate de que las vistas estén en el directorio correcto
-app.use(expressLayouts);
-app.set("layout", "./layouts/layout"); // not at views root
+// Configuración de EJS y archivos estáticos
+app.set('view engine', 'ejs');
+app.use(express.static(path.join(__dirname, 'public')));
 
-/* ***********************
- * Routes
- *************************/
-app.use(staticRoutes);
-
-/* Index route
-*************************/
-app.get("/", function(req, res){
-  res.render("index" , {title: "Home"})
-})
-
-/* ***********************
- * Local Server Information
- * Values from .env (environment) file
- *************************/
-const port = process.env.PORT || 5500;
-const host = process.env.HOST || 'localhost';
-
-/* ***********************
- * Log statement to confirm server operation
- *************************/
-app.listen(port, host, () => {
-  console.log(`app listening on ${host}:${port}`);
+// Ruta para la raíz
+app.get('/', (req, res) => {
+  res.render('index'); // Asegúrate de que existe "views/index.ejs"
 });
 
-/* ***********************
- * Error Handling
- *************************/
-app.use((req, res, next) => {
-  res.status(404).send("Sorry, can't find that!");
+// Manejo de rutas no definidas
+app.get('*', (req, res) => {
+  res.status(404).send('Página no encontrada');
 });
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
+// Inicia el servidor
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Servidor ejecutándose en el puerto ${port}`);
 });
